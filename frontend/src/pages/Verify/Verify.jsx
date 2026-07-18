@@ -20,8 +20,8 @@ export default function Verify() {
     <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-6 text-center">
       <p className="text-3xl font-semibold">Verification pending</p>
       <p className="text-gray-500 max-w-md">
-        Your {role} account ({profile?.email}) is under review. We'll email you
-        once it's approved.
+        Your {role} account ({profile?.email}) is under review. It will approve
+        shortly.
       </p>
       <button
         className="px-4 py-2 border rounded-lg hover:bg-gray-100"

@@ -1,0 +1,16 @@
+# Environment / secrets
+.env
+firebase-service-account.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Editors/OS
+.vscode/
+.idea/
+.DS_Store

@@ -28,12 +28,12 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl shadow-sm">
+    <header className="relative z-50 shrink-0 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl shadow-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5">
         {/* Logo */}
         <Link
           to={isAuthenticated ? `/dashboard/${role}` : "/role"}
-          className="text-xl font-bold tracking-tight text-slate-900"
+          className="text-[2rem] font-bold tracking-tight text-slate-900"
         >
           Sponsor App
         </Link>

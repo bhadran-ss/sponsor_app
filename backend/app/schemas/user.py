@@ -11,6 +11,7 @@ class UserRegister(BaseModel):
     role: UserRole
     full_name: str
     company_name: Optional[str] = None
+    company_proof_url: Optional[str] = None
 
 
 class UserOut(BaseModel):
@@ -21,6 +22,7 @@ class UserOut(BaseModel):
     role: UserRole
     full_name: Optional[str] = None
     company_name: Optional[str] = None
+    company_proof_url: Optional[str] = None
     is_verified: bool
     avatar_url: Optional[str] = None
     created_at: datetime

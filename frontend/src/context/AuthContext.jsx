@@ -13,7 +13,7 @@ export const AuthContextProvider = ({ children }) => {
 
   const refreshProfile = async () => {
     try {
-      const { data } = await api.get("/auth/me");
+      const { data } = await api.get("/profile/me");
       setProfile(data);
       return data;
     } catch (err) {

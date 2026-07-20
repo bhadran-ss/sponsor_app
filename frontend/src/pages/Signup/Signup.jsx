@@ -146,7 +146,7 @@ export default function Signup() {
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-6">
       <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <form onSubmit={handleSignup} className="flex flex-col gap-3">
-          <p className="mb-2 text-center text-[2.25rem] font-bold text-slate-900">
+          <p className="mb-2 text-center text-[2rem] font-bold text-slate-900">
             Sign up as {isSponsor ? "Sponsor" : "Innovator"}
           </p>
 

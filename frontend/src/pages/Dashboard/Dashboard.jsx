@@ -1,31 +1,26 @@
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { signOut } from "firebase/auth";
-import { auth } from "../../firebase/config";
 
 export default function Dashboard() {
-  const navigate = useNavigate();
-  const { profile } = useAuth();
-
-  const handleLogout = async () => {
-    await signOut(auth);
-    navigate("/role", { replace: true });
-  };
+  const { profile: authProfile } = useAuth();
+  const isSponsor = authProfile?.role === "sponsor";
 
   return (
-    <div className="min-h-screen p-10">
-      <div className="flex justify-between items-center mb-8">
-        <p className="text-2xl font-semibold">
-          Welcome, {profile?.full_name} ({profile?.role})
+    <div className="mx-auto flex min-h-screen w-full max-w-4xl items-center justify-center p-4 sm:p-8">
+      <div className="w-full rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <p className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">
+          Dashboard
         </p>
-        <button
-          onClick={handleLogout}
-          className="px-4 py-2 border rounded-lg hover:bg-gray-100"
-        >
-          Log out
-        </button>
+
+        <h1 className="mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">
+          Welcome, {authProfile?.full_name || "User"}
+        </h1>
+
+        <p className="mt-3 max-w-2xl text-sm text-slate-600 sm:text-base">
+          {isSponsor
+            ? "Manage your sponsor account from the header profile panel where you can view your details and edit your profile."
+            : "Manage your innovator account from the header profile panel where you can view your details and edit your profile."}
+        </p>
       </div>
-      <p className="text-gray-500">Dashboard content goes here next.</p>
     </div>
   );
 }

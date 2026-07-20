@@ -1,7 +1,7 @@
 import enum
 import uuid
 
-from sqlalchemy import Column, String, Boolean, Enum, DateTime, Date, ForeignKey, func
+from sqlalchemy import Column, String, Boolean, Enum, DateTime, Date, ForeignKey, Text, Numeric, func
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
 
 from app.db.database import Base
@@ -72,3 +72,29 @@ class SponsorProfile(Base):
     website = Column(String, nullable=True)
 
     user = relationship("User", back_populates="sponsor_profile")
+
+class Idea(Base):
+    __tablename__ = "ideas"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    innovator_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True)
+
+    title = Column(String, nullable=False)
+    problem = Column(Text, nullable=False)
+    solution = Column(Text, nullable=False)
+    business_model = Column(Text, nullable=True)
+    funding_requirement = Column(Numeric(12, 2), nullable=True)
+
+    category = Column(ARRAY(String), nullable=True)
+    dev_stage = Column(String, nullable=True)
+    idea_type = Column(String, nullable=True)
+    team_details = Column(ARRAY(String), nullable=True)
+
+    is_patented = Column(Boolean, default=False, nullable=False)
+    is_draft = Column(Boolean, default=True, nullable=False)
+    pitch_deck_url = Column(String, nullable=True)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    innovator = relationship("User")

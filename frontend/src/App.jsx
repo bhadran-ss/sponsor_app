@@ -7,6 +7,8 @@ import Dashboard from "./pages/Dashboard/Dashboard.jsx";
 import EditProfile from "./pages/Dashboard/EditProfile.jsx";
 import ProtectedRoute from "./components/routing/ProtectedRoute.jsx";
 import MainLayout from "./components/layout/MainLayout.jsx";
+import MyIdeas from "./pages/Ideas/MyIdeas.jsx";
+import IdeaForm from "./pages/Ideas/IdeaForm.jsx";
 
 export default function App() {
   return (
@@ -37,6 +39,30 @@ export default function App() {
           element={
             <ProtectedRoute requireVerified>
               <EditProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/:role/ideas"
+          element={
+            <ProtectedRoute requireVerified>
+              <MyIdeas />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/:role/ideas/new"
+          element={
+            <ProtectedRoute requireVerified role="innovator">
+              <IdeaForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/:role/ideas/:ideaId"
+          element={
+            <ProtectedRoute requireVerified role="innovator">
+              <IdeaForm />
             </ProtectedRoute>
           }
         />

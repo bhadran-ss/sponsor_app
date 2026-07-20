@@ -21,8 +21,6 @@ export default function Header() {
       .join("")
       .toUpperCase() || "P";
 
-
-
   const profileDetails = [
     { label: "Email", value: profile?.email },
     { label: "Phone", value: profile?.phone },
@@ -32,10 +30,8 @@ export default function Header() {
   ];
 
   const navItems = [
-    {
-      label: "Dashboard",
-      to: `/dashboard/${role}`,
-    },
+    { label: "Dashboard", to: `/dashboard/${role}` },
+    { label: "My Ideas", to: `/dashboard/${role}/ideas` },
   ];
 
   const logout = async () => {

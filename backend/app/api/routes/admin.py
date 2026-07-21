@@ -18,7 +18,7 @@ def list_pending_users(
 ):
     return (
         db.query(User)
-        .filter(User.is_verified == False)  # noqa: E712
+        .filter(User.is_verified == False)  
         .order_by(User.created_at.asc())
         .all()
     )

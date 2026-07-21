@@ -63,7 +63,6 @@ def update_my_profile(
         if payload.company_name is not None:
             current_user.company_name = payload.company_name
         if payload.website is not None:
-            # First time this sponsor has set a website — the related row doesn't exist yet, create it
             if current_user.sponsor_profile is None:
                 current_user.sponsor_profile = SponsorProfile(user_id=current_user.id)
             current_user.sponsor_profile.website = payload.website

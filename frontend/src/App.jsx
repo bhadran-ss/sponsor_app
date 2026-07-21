@@ -13,6 +13,8 @@ import IdeaDetail from "./pages/Ideas/IdeaDetail.jsx";
 import IdeaFeed from "./pages/Ideas/IdeaFeed.jsx";
 import LikedIdeas from "./pages/Ideas/LikedIdeas.jsx";
 import AdminPanel from "./pages/Admin/AdminPanel.jsx";
+import ConversationsList from "./pages/Chat/ConversationsList.jsx";
+import ChatWindow from "./pages/Chat/ChatWindow.jsx";
 
 export default function App() {
   return (
@@ -101,6 +103,23 @@ export default function App() {
           element={
             <ProtectedRoute requireVerified adminOnly>
               <AdminPanel />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/dashboard/:role/messages"
+          element={
+            <ProtectedRoute requireVerified>
+              <ConversationsList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/:role/messages/:conversationId"
+          element={
+            <ProtectedRoute requireVerified>
+              <ChatWindow />
             </ProtectedRoute>
           }
         />

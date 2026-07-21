@@ -38,6 +38,7 @@ export default function Header() {
           { label: "Liked Ideas", to: `/dashboard/${role}/liked` },
         ]),
 
+    { label: "Messages", to: `/dashboard/${role}/messages` },
     ...(profile?.is_admin ? [{ label: "Admin", to: "/admin" }] : []),
   ];
 

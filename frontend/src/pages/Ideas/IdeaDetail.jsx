@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
 
@@ -21,6 +21,7 @@ export default function IdeaDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pendingLike, setPendingLike] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     api
@@ -128,6 +129,20 @@ export default function IdeaDetail() {
                 >
                   Edit
                 </Link>
+              )}
+
+              {!isOwner && profile?.role === "sponsor" && (
+                <button
+                  onClick={async () => {
+                    const { data } = await api.post("/chat/conversations", {
+                      other_user_id: idea.innovator_id,
+                    });
+                    navigate(`/dashboard/${role}/messages/${data.id}`);
+                  }}
+                  className="px-4 py-2 bg-slate-900 text-white rounded-full text-sm font-semibold"
+                >
+                  Message innovator
+                </button>
               )}
             </div>
           </div>

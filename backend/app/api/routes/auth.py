@@ -1,6 +1,7 @@
 import cloudinary
 import cloudinary.uploader
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from firebase_admin import auth as firebase_auth
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_decoded_token, get_current_user
@@ -29,41 +30,38 @@ def register(
 
     if role == UserRole.sponsor and not company_name:
         raise HTTPException(status_code=422, detail="company_name is required for sponsors")
+    if role == UserRole.sponsor and not company_proof:
+        raise HTTPException(status_code=422, detail="company_proof is required for sponsors")
 
-    company_proof_url = None
-    if role == UserRole.sponsor:
-        if not company_proof:
-            raise HTTPException(status_code=422, detail="company_proof is required for sponsors")
-
-        # upload_result = cloudinary.uploader.upload(
-        #     company_proof.file,
-        #     folder="sponsor_proofs",
-        #     resource_type="image",
-        # )
-        try:
+    try:
+        company_proof_url = None
+        if role == UserRole.sponsor:
             upload_result = cloudinary.uploader.upload(
-                company_proof.file,
-                folder="sponsor_proofs",
-                resource_type="image",
+                company_proof.file, folder="sponsor_proofs", resource_type="image",
             )
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
-        
-        company_proof_url = upload_result.get("secure_url")
+            company_proof_url = upload_result.get("secure_url")
 
-    user = User(
-        firebase_uid=uid,
-        email=email,
-        role=role,
-        full_name=full_name,
-        company_name=company_name,
-        company_proof_url=company_proof_url,
-        is_verified=False,
-    )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
+        user = User(
+            firebase_uid=uid,
+            email=email,
+            role=role,
+            full_name=full_name,
+            company_name=company_name,
+            company_proof_url=company_proof_url,
+            is_verified=False,
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        return user
+
+    except Exception as e:
+        db.rollback()
+        try:
+            firebase_auth.delete_user(uid)
+        except Exception:
+            pass 
+        raise HTTPException(status_code=500, detail=f"Registration failed: {e}")
 
 
 @router.get("/me", response_model=UserOut)

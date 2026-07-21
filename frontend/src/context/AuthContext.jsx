@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase/config";
 import api from "../api/client";
@@ -11,15 +11,26 @@ export const AuthContextProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const inFlight = useRef(null);
+
   const refreshProfile = async () => {
-    try {
-      const { data } = await api.get("/profile/me");
-      setProfile(data);
-      return data;
-    } catch (err) {
-      setProfile(null);
-      return null;
-    }
+    if (inFlight.current) return inFlight.current;
+
+    const promise = (async () => {
+      try {
+        const { data } = await api.get("/profile/me");
+        setProfile(data);
+        return data;
+      } catch (err) {
+        setProfile(null);
+        return null;
+      } finally {
+        inFlight.current = null;
+      }
+    })();
+
+    inFlight.current = promise;
+    return promise;
   };
 
   useEffect(() => {

@@ -28,6 +28,7 @@ class User(Base):
     company_proof_url = Column(String, nullable=True)  # sponsor-specific proof image URL/data URL
 
     is_verified = Column(Boolean, default=False, nullable=False)
+    is_admin = Column(Boolean, default=False, nullable=False)
     avatar_url = Column(String, nullable=True)  
     
      # Shared contact/profile fields — both roles use these

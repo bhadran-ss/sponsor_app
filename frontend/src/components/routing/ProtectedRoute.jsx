@@ -5,6 +5,7 @@ export default function ProtectedRoute({
   children,
   role,
   requireVerified = false,
+  adminOnly = false,
 }) {
   const { loading, isAuthenticated, profile } = useAuth();
 
@@ -14,6 +15,8 @@ export default function ProtectedRoute({
   if (role && profile.role !== role) return <Navigate to="/role" replace />;
   if (requireVerified && !profile.is_verified)
     return <Navigate to={`/verify/${profile.role}`} replace />;
+
+  if (adminOnly && !profile.is_admin) return <Navigate to="/role" replace />;
 
   return children;
 }

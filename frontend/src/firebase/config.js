@@ -1,10 +1,5 @@
 import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  GoogleAuthProvider,
-  inMemoryPersistence,
-  setPersistence,
-} from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -15,9 +10,5 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-
-setPersistence(auth, inMemoryPersistence).catch((err) => {
-  console.error("Failed to configure Firebase auth persistence:", err);
-});
 
 export const googleProvider = new GoogleAuthProvider();

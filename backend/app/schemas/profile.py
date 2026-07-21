@@ -37,6 +37,7 @@ class ProfileOut(BaseModel):
     full_name: Optional[str] = None
     company_name: Optional[str] = None
     is_verified: bool
+    is_admin: bool = False
     avatar_url: Optional[str] = None
 
     phone: Optional[str] = None

@@ -18,6 +18,7 @@ def _serialize(user: User) -> dict:
         "full_name": user.full_name,
         "company_name": user.company_name,
         "is_verified": user.is_verified,
+        "is_admin": user.is_admin,
         "avatar_url": user.avatar_url,
         "phone": user.phone,
         "city": user.city,

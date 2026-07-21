@@ -7,9 +7,8 @@ export default function Verify() {
   const navigate = useNavigate();
 
   const checkVerification = async () => {
-    await refreshProfile();
-    console.log("profile : ", { profile });
-    if (profile?.is_verified) {
+    const fresh = await refreshProfile();
+    if (fresh?.is_verified) {
       navigate(`/dashboard/${role}`, { replace: true });
     } else {
       alert("Your account is still pending.");

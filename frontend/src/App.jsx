@@ -12,6 +12,7 @@ import IdeaForm from "./pages/Ideas/IdeaForm.jsx";
 import IdeaDetail from "./pages/Ideas/IdeaDetail.jsx";
 import IdeaFeed from "./pages/Ideas/IdeaFeed.jsx";
 import LikedIdeas from "./pages/Ideas/LikedIdeas.jsx";
+import AdminPanel from "./pages/Admin/AdminPanel.jsx";
 
 export default function App() {
   return (
@@ -91,6 +92,15 @@ export default function App() {
           element={
             <ProtectedRoute requireVerified role="sponsor">
               <LikedIdeas />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute requireVerified adminOnly>
+              <AdminPanel />
             </ProtectedRoute>
           }
         />

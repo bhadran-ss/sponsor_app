@@ -9,9 +9,9 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const { profile, isAuthenticated } = useAuth();
+  const { profile, isAuthenticated, loading } = useAuth();
 
-  const role = profile?.role || "sponsor";
+  const role = profile?.role;
   const initials =
     profile?.full_name
       ?.split(" ")
@@ -37,6 +37,8 @@ export default function Header() {
           { label: "Browse Ideas", to: `/dashboard/${role}/browse` },
           { label: "Liked Ideas", to: `/dashboard/${role}/liked` },
         ]),
+
+    ...(profile?.is_admin ? [{ label: "Admin", to: "/admin" }] : []),
   ];
 
   const logout = async () => {
@@ -45,6 +47,20 @@ export default function Header() {
     setProfileMenuOpen(false);
     navigate("/role", { replace: true });
   };
+
+  if (loading) {
+    return (
+      <header className="relative z-50 shrink-0 border-b border-slate-800 bg-slate-900 text-slate-50 shadow-[0_8px_30px_-16px_rgba(15,23,42,0.9)]">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="h-7 w-40 rounded-full bg-slate-800 animate-pulse" />
+          <div className="flex items-center gap-3">
+            <div className="hidden h-9 w-24 rounded-full bg-slate-800 animate-pulse md:block" />
+            <div className="h-11 w-11 rounded-full bg-slate-800 animate-pulse" />
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="relative z-50 shrink-0 border-b border-slate-800 bg-slate-900 text-slate-50 shadow-[0_8px_30px_-16px_rgba(15,23,42,0.9)]">
@@ -77,6 +93,7 @@ export default function Header() {
                 <NavLink
                   key={item.label}
                   to={item.to}
+                  end={item.to === `/dashboard/${role}`}
                   className={({ isActive }) =>
                     `rounded-full px-4 py-2 text-sm font-semibold transition-all ${
                       isActive
@@ -225,6 +242,7 @@ export default function Header() {
                   <NavLink
                     key={item.label}
                     to={item.to}
+                    end={item.to === `/dashboard/${role}`}
                     onClick={() => setOpen(false)}
                     className={({ isActive }) =>
                       `block rounded-2xl px-4 py-3 text-sm font-semibold ${

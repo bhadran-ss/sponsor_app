@@ -24,5 +24,17 @@ class UserOut(BaseModel):
     company_name: Optional[str] = None
     company_proof_url: Optional[str] = None
     is_verified: bool
+    is_admin: bool
     avatar_url: Optional[str] = None
+    created_at: datetime
+    
+class PendingUserOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    email: str
+    role: UserRole
+    full_name: Optional[str] = None
+    company_name: Optional[str] = None
+    company_proof_url: Optional[str] = None
     created_at: datetime

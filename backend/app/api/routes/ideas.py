@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, require_role
 from app.db.database import get_db
-from app.db.models import User, UserRole, Idea
+from app.db.models import IdeaLike, User, UserRole, Idea
 from app.schemas.idea import IdeaCreate, IdeaUpdate, IdeaOut
 
 router = APIRouter(prefix="/ideas", tags=["ideas"])
@@ -47,14 +47,24 @@ def browse_ideas(
     current_user: User = Depends(require_role(UserRole.sponsor)),
     db: Session = Depends(get_db),
 ):
-    q = db.query(Idea).filter(Idea.is_draft == False)  # noqa: E712
+    q = db.query(Idea).filter(Idea.is_draft == False)  
     if category:
         q = q.filter(Idea.category.contains([category]))
     if dev_stage:
         q = q.filter(Idea.dev_stage == dev_stage)
     if idea_type:
         q = q.filter(Idea.idea_type == idea_type)
-    return q.order_by(Idea.created_at.desc()).offset(skip).limit(limit).all()
+    ideas = q.order_by(Idea.created_at.desc()).offset(skip).limit(limit).all()
+
+    liked_ids = {
+        row.idea_id for row in db.query(IdeaLike).filter(IdeaLike.sponsor_id == current_user.id)
+    }
+    result = []
+    for idea in ideas:
+        out = IdeaOut.model_validate(idea)
+        out.is_liked = idea.id in liked_ids
+        result.append(out)
+    return result
 
 
 def _get_owned_idea(idea_id: uuid.UUID, current_user: User, db: Session) -> Idea:
@@ -80,7 +90,12 @@ def get_idea(
     if not is_owner and (idea.is_draft or current_user.role != UserRole.sponsor):
         raise HTTPException(status_code=404, detail="Idea not found")
 
-    return idea
+    out = IdeaOut.model_validate(idea)
+    if current_user.role == UserRole.sponsor:
+        out.is_liked = db.query(IdeaLike).filter(
+            IdeaLike.sponsor_id == current_user.id, IdeaLike.idea_id == idea.id
+        ).first() is not None
+    return out
 
 
 @router.put("/{idea_id}", response_model=IdeaOut)
@@ -107,3 +122,51 @@ def delete_idea(
     idea = _get_owned_idea(idea_id, current_user, db)
     db.delete(idea)
     db.commit()
+    
+@router.post("/{idea_id}/like")
+def like_idea(
+    idea_id: uuid.UUID,
+    current_user: User = Depends(require_role(UserRole.sponsor)),
+    db: Session = Depends(get_db),
+):
+    idea = db.query(Idea).filter(Idea.id == idea_id, Idea.is_draft == False).first()  
+    if idea is None:
+        raise HTTPException(status_code=404, detail="Idea not found")
+
+    existing = db.query(IdeaLike).filter(
+        IdeaLike.sponsor_id == current_user.id, IdeaLike.idea_id == idea_id
+    ).first()
+    if existing is None:
+        db.add(IdeaLike(sponsor_id=current_user.id, idea_id=idea_id))
+        db.commit()
+    return {"liked": True}
+
+
+@router.delete("/{idea_id}/like")
+def unlike_idea(
+    idea_id: uuid.UUID,
+    current_user: User = Depends(require_role(UserRole.sponsor)),
+    db: Session = Depends(get_db),
+):
+    db.query(IdeaLike).filter(
+        IdeaLike.sponsor_id == current_user.id, IdeaLike.idea_id == idea_id
+    ).delete()
+    db.commit()
+    return {"liked": False}
+
+
+@router.get("/liked/list", response_model=list[IdeaOut])
+def list_liked_ideas(
+    current_user: User = Depends(require_role(UserRole.sponsor)),
+    db: Session = Depends(get_db),
+):
+    liked_ids = {
+        row.idea_id for row in db.query(IdeaLike).filter(IdeaLike.sponsor_id == current_user.id)
+    }
+    ideas = db.query(Idea).filter(Idea.id.in_(liked_ids)).order_by(Idea.created_at.desc()).all()
+    result = []
+    for idea in ideas:
+        out = IdeaOut.model_validate(idea)
+        out.is_liked = True
+        result.append(out)
+    return result

@@ -43,21 +43,28 @@ export default function IdeaForm() {
 
   useEffect(() => {
     if (!isEditing) return;
-    api.get(`/ideas/${ideaId}`).then(({ data }) => {
-      setForm({
-        title: data.title,
-        problem: data.problem,
-        solution: data.solution,
-        business_model: data.business_model || "",
-        funding_requirement: data.funding_requirement || "",
-        category: data.category || [],
-        dev_stage: data.dev_stage || "",
-        idea_type: data.idea_type || "",
-        team_details: data.team_details?.join(", ") || "",
-        is_patented: data.is_patented,
-      });
-      setLoading(false);
-    });
+
+    api
+      .get(`/ideas/${ideaId}`)
+      .then(({ data }) => {
+        setForm({
+          title: data.title,
+          problem: data.problem,
+          solution: data.solution,
+          business_model: data.business_model || "",
+          funding_requirement: data.funding_requirement || "",
+          category: data.category || [],
+          dev_stage: data.dev_stage || "",
+          idea_type: data.idea_type || "",
+          team_details: data.team_details?.join(", ") || "",
+          is_patented: data.is_patented,
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        setError(err.response?.data?.detail || "Failed to load idea.");
+      })
+      .finally(() => setLoading(false));
   }, [ideaId, isEditing]);
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -72,10 +79,10 @@ export default function IdeaForm() {
   };
 
   const buildPayload = (draft) => ({
-    title: form.title,
-    problem: form.problem,
-    solution: form.solution,
-    business_model: form.business_model,
+    title: form.title.trim(),
+    problem: form.problem.trim(),
+    solution: form.solution.trim(),
+    business_model: form.business_model.trim(),
     funding_requirement: form.funding_requirement
       ? Number(form.funding_requirement)
       : null,
@@ -90,7 +97,28 @@ export default function IdeaForm() {
     is_draft: draft,
   });
 
+  const validateForm = () => {
+    if (!form.title.trim()) {
+      setError("Please enter a title for your idea.");
+      return false;
+    }
+
+    if (!form.problem.trim()) {
+      setError("Please describe the problem your idea solves.");
+      return false;
+    }
+
+    if (!form.solution.trim()) {
+      setError("Please describe your solution.");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (draft) => {
+    if (!validateForm()) return;
+
     setSaving(true);
     setError(null);
     try {
@@ -140,6 +168,7 @@ export default function IdeaForm() {
               Title
             </label>
             <input
+              required
               placeholder="Title"
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-900 focus:bg-white"
               value={form.title}
@@ -152,6 +181,7 @@ export default function IdeaForm() {
               Problem
             </label>
             <textarea
+              required
               placeholder="Problem"
               className="h-28 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-900 focus:bg-white"
               value={form.problem}
@@ -164,6 +194,7 @@ export default function IdeaForm() {
               Solution
             </label>
             <textarea
+              required
               placeholder="Solution"
               className="h-28 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-900 focus:bg-white"
               value={form.solution}

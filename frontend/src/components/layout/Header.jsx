@@ -31,7 +31,12 @@ export default function Header() {
 
   const navItems = [
     { label: "Dashboard", to: `/dashboard/${role}` },
-    { label: "My Ideas", to: `/dashboard/${role}/ideas` },
+    ...(role === "innovator"
+      ? [{ label: "My Ideas", to: `/dashboard/${role}/ideas` }]
+      : [
+          { label: "Browse Ideas", to: `/dashboard/${role}/browse` },
+          { label: "Liked Ideas", to: `/dashboard/${role}/liked` },
+        ]),
   ];
 
   const logout = async () => {

@@ -1,7 +1,7 @@
 import enum
 import uuid
 
-from sqlalchemy import Column, String, Boolean, Enum, DateTime, Date, ForeignKey, Text, Numeric, func
+from sqlalchemy import Column, String, Boolean, Enum, DateTime, Date, ForeignKey, Text, Numeric, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
 
 from app.db.database import Base
@@ -98,3 +98,17 @@ class Idea(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     innovator = relationship("User")
+    
+    
+class IdeaLike(Base):
+    __tablename__ = "idea_likes"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    sponsor_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True)
+    idea_id = Column(UUID(as_uuid=True), ForeignKey("ideas.id"), nullable=False, index=True)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # A sponsor can only like a given idea once — the DB itself enforces
+    # this, not just application logic.
+    __table_args__ = (UniqueConstraint("sponsor_id", "idea_id", name="uq_sponsor_idea_like"),)

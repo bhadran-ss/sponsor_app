@@ -50,6 +50,7 @@ class IdeaOut(BaseModel):
     team_details: Optional[List[str]] = None
     is_patented: bool
     is_draft: bool
+    is_liked: bool = False
     pitch_deck_url: Optional[str] = None
     created_at: datetime
     updated_at: datetime

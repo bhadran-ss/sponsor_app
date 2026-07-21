@@ -1,4 +1,5 @@
 import cloudinary
+import cloudinary.uploader
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
@@ -34,11 +35,20 @@ def register(
         if not company_proof:
             raise HTTPException(status_code=422, detail="company_proof is required for sponsors")
 
-        upload_result = cloudinary.uploader.upload(
-            company_proof.file,
-            folder="sponsor_proofs",
-            resource_type="image",
-        )
+        # upload_result = cloudinary.uploader.upload(
+        #     company_proof.file,
+        #     folder="sponsor_proofs",
+        #     resource_type="image",
+        # )
+        try:
+            upload_result = cloudinary.uploader.upload(
+                company_proof.file,
+                folder="sponsor_proofs",
+                resource_type="image",
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        
         company_proof_url = upload_result.get("secure_url")
 
     user = User(

@@ -9,6 +9,9 @@ import ProtectedRoute from "./components/routing/ProtectedRoute.jsx";
 import MainLayout from "./components/layout/MainLayout.jsx";
 import MyIdeas from "./pages/Ideas/MyIdeas.jsx";
 import IdeaForm from "./pages/Ideas/IdeaForm.jsx";
+import IdeaDetail from "./pages/Ideas/IdeaDetail.jsx";
+import IdeaFeed from "./pages/Ideas/IdeaFeed.jsx";
+import LikedIdeas from "./pages/Ideas/LikedIdeas.jsx";
 
 export default function App() {
   return (
@@ -45,7 +48,7 @@ export default function App() {
         <Route
           path="/dashboard/:role/ideas"
           element={
-            <ProtectedRoute requireVerified>
+            <ProtectedRoute requireVerified role="innovator">
               <MyIdeas />
             </ProtectedRoute>
           }
@@ -61,11 +64,37 @@ export default function App() {
         <Route
           path="/dashboard/:role/ideas/:ideaId"
           element={
+            <ProtectedRoute requireVerified>
+              <IdeaDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/:role/ideas/:ideaId/edit"
+          element={
             <ProtectedRoute requireVerified role="innovator">
               <IdeaForm />
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/dashboard/:role/browse"
+          element={
+            <ProtectedRoute requireVerified role="sponsor">
+              <IdeaFeed />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/dashboard/:role/liked"
+          element={
+            <ProtectedRoute requireVerified role="sponsor">
+              <LikedIdeas />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="*" element={<Navigate to="/role" replace />} />
       </Route>
     </Routes>

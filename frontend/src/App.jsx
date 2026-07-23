@@ -15,6 +15,9 @@ import LikedIdeas from "./pages/Ideas/LikedIdeas.jsx";
 import AdminPanel from "./pages/Admin/AdminPanel.jsx";
 import ConversationsList from "./pages/Chat/ConversationsList.jsx";
 import ChatWindow from "./pages/Chat/ChatWindow.jsx";
+import MyDeals from "./pages/Deals/MyDeals.jsx";
+import ReceivedDeals from "./pages/Deals/ReceivedDeals.jsx";
+import DealDetail from "./pages/Deals/DealDetail.jsx";
 
 export default function App() {
   return (
@@ -120,6 +123,31 @@ export default function App() {
           element={
             <ProtectedRoute requireVerified>
               <ChatWindow />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/dashboard/:role/deals"
+          element={
+            <ProtectedRoute requireVerified role="sponsor">
+              <MyDeals />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/:role/received"
+          element={
+            <ProtectedRoute requireVerified role="innovator">
+              <ReceivedDeals />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/:role/deals/:dealId"
+          element={
+            <ProtectedRoute requireVerified>
+              <DealDetail />
             </ProtectedRoute>
           }
         />

@@ -139,9 +139,22 @@ export default function IdeaDetail() {
                     });
                     navigate(`/dashboard/${role}/messages/${data.id}`);
                   }}
-                  className="px-4 py-2 bg-slate-900 text-white rounded-full text-sm font-semibold"
+                  className="inline-flex w-full items-center justify-center rounded-full bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-200 sm:w-auto"
                 >
                   Message innovator
+                </button>
+              )}
+              {!isOwner && profile?.role === "sponsor" && (
+                <button
+                  onClick={async () => {
+                    const { data } = await api.post("/deals", {
+                      idea_id: idea.id,
+                    });
+                    navigate(`/dashboard/${role}/deals/${data.id}`);
+                  }}
+                  className="inline-flex w-full items-center justify-center rounded-full border border-slate-600 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-50 transition hover:border-slate-500 hover:bg-slate-700 sm:w-auto"
+                >
+                  Express interest
                 </button>
               )}
             </div>

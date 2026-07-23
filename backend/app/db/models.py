@@ -3,7 +3,6 @@ import uuid
 
 from sqlalchemy import Column, String, Boolean, Enum, DateTime, Date, ForeignKey, Text, Numeric, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
-
 from app.db.database import Base
 from sqlalchemy.orm import relationship
 
@@ -119,11 +118,7 @@ class Conversation(Base):
     __tablename__ = "conversations"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-
-    # Always stored with the lexicographically smaller UUID first — see
-    # the get_or_create helper in routes/chat.py. This lets a unique
-    # constraint enforce "one conversation per pair" regardless of who
-    # started it.
+    
     user_a_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True)
     user_b_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True)
 
@@ -148,3 +143,37 @@ class Message(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     sender = relationship("User")
+    
+class DealStage(str, enum.Enum):
+    interested = "interested"
+    in_discussion = "in_discussion"
+    term_sheet = "term_sheet"
+    funded = "funded"
+    passed = "passed"
+
+
+class Deal(Base):
+    __tablename__ = "deals"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    idea_id = Column(UUID(as_uuid=True), ForeignKey("ideas.id"), nullable=False, index=True)
+    sponsor_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True)
+    innovator_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True)
+
+    stage = Column(Enum(DealStage), default=DealStage.interested, nullable=False)
+    offered_amount = Column(Numeric(14, 2), nullable=True)
+    equity_percentage = Column(Numeric(5, 2), nullable=True)
+    terms = Column(Text, nullable=True)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    idea = relationship("Idea")
+    sponsor = relationship("User", foreign_keys=[sponsor_id])
+    innovator = relationship("User", foreign_keys=[innovator_id])
+
+    # One deal per sponsor per idea — re-expressing interest just moves
+    # the existing deal's stage, it doesn't create a duplicate.
+    __table_args__ = (UniqueConstraint("sponsor_id", "idea_id", name="uq_sponsor_idea_deal"),)
+    

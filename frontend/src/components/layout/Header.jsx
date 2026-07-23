@@ -32,12 +32,15 @@ export default function Header() {
   const navItems = [
     { label: "Dashboard", to: `/dashboard/${role}` },
     ...(role === "innovator"
-      ? [{ label: "My Ideas", to: `/dashboard/${role}/ideas` }]
+      ? [
+          { label: "My Ideas", to: `/dashboard/${role}/ideas` },
+          { label: "Received Interest", to: `/dashboard/${role}/received` },
+        ]
       : [
           { label: "Browse Ideas", to: `/dashboard/${role}/browse` },
           { label: "Liked Ideas", to: `/dashboard/${role}/liked` },
+          { label: "My Pipeline", to: `/dashboard/${role}/deals` },
         ]),
-
     { label: "Messages", to: `/dashboard/${role}/messages` },
     ...(profile?.is_admin ? [{ label: "Admin", to: "/admin" }] : []),
   ];

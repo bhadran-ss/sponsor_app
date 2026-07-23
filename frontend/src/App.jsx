@@ -18,12 +18,13 @@ import ChatWindow from "./pages/Chat/ChatWindow.jsx";
 import MyDeals from "./pages/Deals/MyDeals.jsx";
 import ReceivedDeals from "./pages/Deals/ReceivedDeals.jsx";
 import DealDetail from "./pages/Deals/DealDetail.jsx";
+import RootRedirect from "./components/routing/RootRedirect.jsx";
 
 export default function App() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        <Route path="/" element={<Navigate to="/role" replace />} />
+        <Route path="/" element={<RootRedirect />} />{" "}
         <Route path="/role" element={<Roleselector />} />
         <Route path="/signup/:role" element={<Signup />} />
         <Route path="/login/:role" element={<Login />} />
@@ -91,7 +92,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/dashboard/:role/liked"
           element={
@@ -100,7 +100,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/admin"
           element={
@@ -109,7 +108,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/dashboard/:role/messages"
           element={
@@ -126,7 +124,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/dashboard/:role/deals"
           element={
@@ -151,7 +148,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
         <Route path="*" element={<Navigate to="/role" replace />} />
       </Route>
     </Routes>
